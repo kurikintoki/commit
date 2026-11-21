@@ -5,14 +5,18 @@ Usage: select_paths.py [--] [<path> ...]
 
   No paths: every new, modified, renamed and deleted file in `git status`
             (ignored files never appear there).
-  Paths:    exactly those paths (a directory means the changed files under it),
-            resolved against the current directory. A leading "@" is stripped.
+  Paths:    only those paths (a directory means the changed files under it;
+            either side of a rename selects the rename), resolved against the
+            current directory. A leading "@" is stripped. Every other change is
+            listed in "others" and left alone.
 
 Prints JSON on stdout (paths relative to "root"):
 
   {"root": "/abs/repo", "branch": "main", "upstream": "origin/main" | null,
    "remotes": ["origin"], "stage": [...], "renamed_from": [...],
-   "deleted": [...], "skipped_unchanged": [...]}
+   "deleted": [...], "skipped_unchanged": [...], "others": [...]}
+
+  "others" is [] without paths.
 
 Exit codes:
   0  JSON on stdout
@@ -22,7 +26,7 @@ Exit codes:
   4  a given path doesn't exist and isn't tracked, is ignored, or is outside the repo
   5  detached HEAD (no current branch)
 
-Spec: PLAN3 in the commit project (03_plans/PLAN3.md).
+Spec: PLAN3 + PLAN7 ("others") in the commit project (03_plans/).
 """
 import fnmatch
 import json
@@ -214,6 +218,13 @@ def main(argv):
             if e["kind"] == "rename" and e["orig"]:
                 renamed_from.append(e["orig"])
 
+    # PLAN7: changes left out (path mode only; without paths everything is selected).
+    others = []
+    if paths:
+        for e in entries:
+            if (e["path"], e["orig"], e["kind"]) not in seen and e["path"] not in others:
+                others.append(e["path"])
+
     flagged = [p for p in stage + renamed_from + deleted if is_credential_like(p)]
     if flagged:
         print("credential-like paths; nothing staged or committed:", file=sys.stderr)
@@ -239,6 +250,7 @@ def main(argv):
         "renamed_from": renamed_from,
         "deleted": deleted,
         "skipped_unchanged": skipped,
+        "others": others,
     }
     sys.stdout.write(json.dumps(result, ensure_ascii=False, indent=1) + "\n")
     return 0

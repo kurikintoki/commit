@@ -6,7 +6,8 @@ paths (or all new, updated and deleted files), never push, never stage credentia
 Source: `.claude/skills/commit/` (`SKILL.md`, `select_paths.py`, `test_select_paths.py`), exposed
 globally through the symlink `~/.claude-personal/skills/commit`. `/prompt --commit` (prompt
 project, PLAN16) reads this `SKILL.md` and follows it.
-Spec: `03_plans/PLAN3.md` + `03_plans/PLAN5.md` (SKILL.md wording). Human-facing usage and install: `README.md`.
+Spec: `03_plans/PLAN3.md` + `03_plans/PLAN5.md` (SKILL.md wording) +
+`03_plans/PLAN7.md` (only the named files; `others` in the JSON). Human-facing usage and install: `README.md`.
 
 ## How to run
 - Test: `python3 .claude/skills/commit/test_select_paths.py`

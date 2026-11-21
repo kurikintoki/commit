@@ -7,8 +7,12 @@ Commits message, never pushes, and never stages files that look like credentials
 ## Usage
 
     /commit                          # all new, updated and deleted files
-    /commit 02_prompts/PROMPT4.md 03_plans/PLAN4.md   # exactly these paths
+    /commit 02_prompts/PROMPT4.md 03_plans/PLAN4.md   # only these files
     /commit docs                     # the changed files under docs/
+
+With paths, **only those files** are committed. Every other change (modified, staged or untracked)
+stays exactly as it is, and the report lists it under "Left as is". Naming either side of a rename
+commits the rename.
 
 Only you can start it (Claude never runs `/commit` on its own). Each run:
 
@@ -24,8 +28,8 @@ Only you can start it (Claude never runs `/commit` on its own). Each run:
    conventions win. Attribution lines come from the session's instructions.
 3. Commits with `git add -- <paths>` and `git commit --only -- <paths>`. Anything you had already
    staged for other files stays staged and out of the commit.
-4. Reports the short SHA, subject and files, plus a push command you can run, chosen from the repo's
-   state:
+4. Reports the short SHA, subject and files; with paths, the other changes left as is (up to 10,
+   then "and N more"); and a push command you can run, chosen from the repo's state:
 
    | Repo | Suggested |
    |---|---|
@@ -75,4 +79,4 @@ The skill lives in `.claude/skills/commit/`. Expose it to every project with a s
 
 Test: `python3 .claude/skills/commit/test_select_paths.py`
 
-Spec: [`03_plans/PLAN3.md`](03_plans/PLAN3.md) + [`03_plans/PLAN5.md`](03_plans/PLAN5.md) (SKILL.md wording) (index: [`03_plans/INDEX.md`](03_plans/INDEX.md)).
+Spec: [`03_plans/PLAN3.md`](03_plans/PLAN3.md) + [`03_plans/PLAN5.md`](03_plans/PLAN5.md) (SKILL.md wording) + [`03_plans/PLAN7.md`](03_plans/PLAN7.md) (only the named files) (index: [`03_plans/INDEX.md`](03_plans/INDEX.md)).

@@ -11,8 +11,12 @@ Make **one** commit on the current branch with exactly the given paths, or, with
 new, updated and deleted file. Write a Conventional Commits message, and suggest a push command
 the user can run. **Never push.**
 
+With paths, the commit contains **only** those files. Every other change (modified, staged or
+untracked) is left exactly as it was.
+
 The skill lives in the commit project (`.claude/skills/commit/`) and is exposed globally by the
-symlink `~/.claude-personal/skills/commit`. Spec: that project's `03_plans/PLAN3.md` + `03_plans/PLAN5.md` (wording).
+symlink `~/.claude-personal/skills/commit`. Spec: that project's `03_plans/PLAN3.md` +
+`03_plans/PLAN5.md` (wording) + `03_plans/PLAN7.md` (only the named files).
 
 Arguments: `$ARGUMENTS`
 
@@ -30,6 +34,8 @@ Arguments: `$ARGUMENTS`
 
 - **Typed as `/commit …`:** every word in the arguments above is a path (a leading `@` is fine).
   There are no options; in particular no `-m`. No words means "all new, updated and deleted files".
+  Only these paths are committed. A directory means the changed files under it; naming either
+  side of a rename commits the rename.
 - **Followed from another skill** (e.g. `/prompt --commit` read this file): ignore the
   Arguments line above. It is either empty or an unfilled placeholder. Use the file list and
   the suggested subject that skill gave you instead.
@@ -59,8 +65,12 @@ The JSON (paths relative to `root`):
 
 ```json
 {"root": "/abs/repo", "branch": "main", "upstream": "origin/main", "remotes": ["origin"],
- "stage": ["…"], "renamed_from": ["…"], "deleted": ["…"], "skipped_unchanged": ["…"]}
+ "stage": ["…"], "renamed_from": ["…"], "deleted": ["…"], "skipped_unchanged": ["…"],
+ "others": ["…"]}
 ```
+
+`others` lists the changes that are **not** committed (path mode only; `[]` without paths). Never
+add them to PATHS.
 
 From here on, **PATHS** = `stage` + `renamed_from` + `deleted`, in that order.
 
@@ -123,6 +133,8 @@ then:
 - **Committed:** the `stage` paths (renames as `old → new`).
 - **Deleted:** the `deleted` paths, if any.
 - **Skipped (unchanged):** `skipped_unchanged`, if any.
+- **Left as is:** when `others` isn't empty: "N other changes, not committed: `b.md`, `c.md`, …".
+  List at most 10 paths, then "and M more". No line when `others` is empty.
 - If you adjusted a suggested subject, the original and why.
 - **Push hint**, from `upstream`, `remotes` and `branch`:
 

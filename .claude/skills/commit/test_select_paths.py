@@ -324,6 +324,96 @@ class TestCommitCommands(RepoCase):
         self.assertIn("first.md", sh(["git", "ls-files"], fresh))
 
 
+class TestOthers(RepoCase):
+    """PLAN7: in path mode, the changes left out are listed in "others"."""
+
+    def test_empty_without_paths(self):
+        write(self.repo, "a.md")
+        write(self.repo, "tracked.md", "two\n")
+        rc, data, _, err = self.run_script()
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(data["others"], [])
+
+    def test_empty_when_paths_cover_every_change(self):
+        write(self.repo, "a.md")
+        write(self.repo, "tracked.md", "two\n")
+        rc, data, _, err = self.run_script("a.md", "tracked.md")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(data["others"], [])
+
+    def test_lists_bystanders(self):
+        write(self.repo, "a.md")
+        write(self.repo, "tracked.md", "two\n")
+        os.remove(os.path.join(self.repo, "gone.md"))
+        write(self.repo, "staged.md")
+        self.git("add", "staged.md")
+        rc, data, _, err = self.run_script("a.md")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(data["stage"], ["a.md"])
+        self.assertEqual(sorted(data["others"]), ["gone.md", "staged.md", "tracked.md"])
+
+    def test_unselected_rename_listed_once_by_new_name(self):
+        write(self.repo, "old.md", "r\n" * 20)
+        self.git("add", "old.md")
+        self.git("commit", "-q", "-m", "add old")
+        self.git("mv", "old.md", "new.md")
+        write(self.repo, "a.md")
+        rc, data, _, err = self.run_script("a.md")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(data["others"], ["new.md"])
+
+    def test_directory_argument(self):
+        write(self.repo, "docs/a.md")
+        write(self.repo, "docs/sub/b.md")
+        write(self.repo, "outside.md")
+        rc, data, _, err = self.run_script("docs")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(sorted(data["stage"]), ["docs/a.md", "docs/sub/b.md"])
+        self.assertEqual(data["others"], ["outside.md"])
+
+    def test_credential_like_bystander_doesnt_stop_the_run(self):
+        # O5: the credential rule applies to what is committed, not to what's left out.
+        write(self.repo, "a.md")
+        write(self.repo, "credentials.json", "{}\n")
+        rc, data, _, err = self.run_script("a.md")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(data["others"], ["credentials.json"])
+
+
+class TestBystandersEndToEnd(TestCommitCommands):
+    """PLAN7 O2: naming one file commits only it; every other change is untouched."""
+
+    def test_only_the_named_file(self):
+        write(self.repo, "a.md", "changed\n")
+        self.git("add", "a.md")
+        self.git("commit", "-q", "-m", "add a")
+        write(self.repo, "a.md", "changed again\n")
+        write(self.repo, "tracked.md", "modified, not staged\n")
+        write(self.repo, "staged.md", "new, staged\n")
+        self.git("add", "staged.md")
+        write(self.repo, "untracked.md", "untracked\n")
+
+        def others_state():
+            lines = self.git("status", "--porcelain", "--untracked-files=all").splitlines()
+            return sorted(l for l in lines if not l.endswith(" a.md"))
+
+        before = others_state()
+        rc, data, _, err = self.run_script("a.md")
+        self.assertEqual(rc, 0, err)
+        self.assertEqual(sorted(data["others"]), ["staged.md", "tracked.md", "untracked.md"])
+        shown = self.commit_from(data)
+        self.assertEqual(shown.split(), ["M", "a.md"])
+        self.assertEqual(others_state(), before)
+        with open(os.path.join(self.repo, "tracked.md"), encoding="utf-8") as f:
+            self.assertEqual(f.read(), "modified, not staged\n")
+        self.assertNotIn("a.md", self.git("status", "--porcelain"))
+
+    # The inherited tests already ran in TestCommitCommands.
+    test_other_staged_change_stays_staged = None
+    test_rename_deletion_and_spaces = None
+    test_initial_commit = None
+
+
 class TestSkillMd(unittest.TestCase):
     """PLAN5: Claude Code substitutes the arguments placeholder everywhere in
     SKILL.md, so it may appear only on the `Arguments:` line."""
