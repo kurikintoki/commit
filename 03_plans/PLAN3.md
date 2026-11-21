@@ -1,6 +1,6 @@
 # PLAN3 — `/commit` skill: commit given paths (or all changes) in one Conventional Commit
 
-> Status: Confirmed
+> Status: Implemented · SHA: 8ad898f
 
 Source: `02_prompts/PROMPT3.md` (answers to the 要確認 in [[PLAN2]]). Date: 2026-11-21
 
