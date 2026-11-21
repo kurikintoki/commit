@@ -1,6 +1,6 @@
 # PLAN2 — `/commit` skill: commit given paths (or all changes) in one Conventional Commit
 
-> Status: Draft
+> Status: Superseded · Superseded by: PLAN3
 
 Source: `02_prompts/PROMPT2.md` (answers to the 要確認 in [[PLAN]]). Date: 2026-11-21
 
