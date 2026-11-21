@@ -1,6 +1,6 @@
 # PLAN7 — `/commit <file>`: commit only the named files, and show what was left out
 
-> Status: Confirmed · Depends-on: PLAN3
+> Status: Implemented · Depends-on: PLAN3 · SHA: 190060c
 
 Source: `02_prompts/PROMPT7.md` (answers to the 要確認 in [[PLAN6]]). Date: 2026-11-22
 

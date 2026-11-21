@@ -1,6 +1,6 @@
 # PLAN5 — `/commit`: word `SKILL.md` so the arguments placeholder appears only once
 
-> Status: Confirmed · Depends-on: PLAN3
+> Status: Implemented · Depends-on: PLAN3 · SHA: f870b2b
 
 Source: `02_prompts/PROMPT5.md` (answers to the 要確認 in [[RESULT4]]; the prompt's "RESULR4" is
 read as RESULT4, the only RESULT with that item). Date: 2026-11-21
