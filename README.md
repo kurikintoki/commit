@@ -75,4 +75,4 @@ The skill lives in `.claude/skills/commit/`. Expose it to every project with a s
 
 Test: `python3 .claude/skills/commit/test_select_paths.py`
 
-Spec: [`03_plans/PLAN3.md`](03_plans/PLAN3.md) (index: [`03_plans/INDEX.md`](03_plans/INDEX.md)).
+Spec: [`03_plans/PLAN3.md`](03_plans/PLAN3.md) + [`03_plans/PLAN5.md`](03_plans/PLAN5.md) (SKILL.md wording) (index: [`03_plans/INDEX.md`](03_plans/INDEX.md)).

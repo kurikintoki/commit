@@ -6,7 +6,7 @@ paths (or all new, updated and deleted files), never push, never stage credentia
 Source: `.claude/skills/commit/` (`SKILL.md`, `select_paths.py`, `test_select_paths.py`), exposed
 globally through the symlink `~/.claude-personal/skills/commit`. `/prompt --commit` (prompt
 project, PLAN16) reads this `SKILL.md` and follows it.
-Spec: `03_plans/PLAN3.md`. Human-facing usage and install: `README.md`.
+Spec: `03_plans/PLAN3.md` + `03_plans/PLAN5.md` (SKILL.md wording). Human-facing usage and install: `README.md`.
 
 ## How to run
 - Test: `python3 .claude/skills/commit/test_select_paths.py`
@@ -17,6 +17,8 @@ Spec: `03_plans/PLAN3.md`. Human-facing usage and install: `README.md`.
   effect in all projects at once, so run the tests before leaving it changed.
 - Behavior changes start as a new PLAN in `03_plans/` (don't rewrite Implemented PLANs).
   Then keep `SKILL.md`, `select_paths.py`, the tests and `README.md` in sync.
+- Write the arguments placeholder (`$ARGUMENTS`) in `SKILL.md` only on the `Arguments:` line;
+  Claude Code substitutes it everywhere. A test checks this (PLAN5).
 - Plans: `03_plans/PLAN*.md`, managed with `/plan-index` (rebuild `INDEX.md` after any PLAN change).
   Results: `04_results/RESULT<n>.md`.
 - Scripts: Python 3.9+, standard library only. `select_paths.py` exit codes (keep in sync with

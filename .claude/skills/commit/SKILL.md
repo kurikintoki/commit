@@ -12,7 +12,7 @@ new, updated and deleted file. Write a Conventional Commits message, and suggest
 the user can run. **Never push.**
 
 The skill lives in the commit project (`.claude/skills/commit/`) and is exposed globally by the
-symlink `~/.claude-personal/skills/commit`. Spec: that project's `03_plans/PLAN3.md`.
+symlink `~/.claude-personal/skills/commit`. Spec: that project's `03_plans/PLAN3.md` + `03_plans/PLAN5.md` (wording).
 
 Arguments: `$ARGUMENTS`
 
@@ -30,9 +30,9 @@ Arguments: `$ARGUMENTS`
 
 - **Typed as `/commit …`:** every word in the arguments above is a path (a leading `@` is fine).
   There are no options; in particular no `-m`. No words means "all new, updated and deleted files".
-- **Followed from another skill** (e.g. `/prompt --commit` read this file): the arguments line
-  above is not filled in. Use the file list and the suggested subject that skill gave you instead,
-  and ignore `$ARGUMENTS`.
+- **Followed from another skill** (e.g. `/prompt --commit` read this file): ignore the
+  Arguments line above. It is either empty or an unfilled placeholder. Use the file list and
+  the suggested subject that skill gave you instead.
 
 Pass a path that contains spaces as one argument (quote it).
 

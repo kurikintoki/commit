@@ -324,5 +324,18 @@ class TestCommitCommands(RepoCase):
         self.assertIn("first.md", sh(["git", "ls-files"], fresh))
 
 
+class TestSkillMd(unittest.TestCase):
+    """PLAN5: Claude Code substitutes the arguments placeholder everywhere in
+    SKILL.md, so it may appear only on the `Arguments:` line."""
+
+    def test_placeholder_only_on_arguments_line(self):
+        token = "$" + "ARGUMENTS"
+        with open(os.path.join(HERE, "SKILL.md"), encoding="utf-8") as f:
+            lines = [ln for ln in f if token in ln]
+        self.assertEqual(len(lines), 1, lines)
+        self.assertEqual(lines[0].count(token), 1, lines)
+        self.assertTrue(lines[0].startswith("Arguments:"), lines)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
